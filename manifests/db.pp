@@ -17,6 +17,7 @@ class designate::db (
   include ::designate::params
 
   Package<| title == 'designate-common' |> -> Class['::designate::db']
+  Designate::Install<||> -> Class['designate::db']
 
   case $database_connection {
     /^mysql:\/\//: {

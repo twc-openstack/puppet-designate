@@ -41,7 +41,6 @@ describe 'designate' do
       is_expected.to contain_group('designate').with(
         :ensure  => 'present',
         :name    => 'designate',
-        :require => 'Package[designate-common]',
       )
     end
 
@@ -74,8 +73,8 @@ describe 'designate' do
     it 'installs designate common package' do
       is_expected.to contain_package('designate-common').with(
         :ensure => 'installed',
-        :name   => platform_params[:common_package_name]
-      )
+        :name   => platform_params[:common_package_name],
+      ).that_comes_before('Group[designate]')
     end
 
     it 'configures debug and verbosity' do

@@ -20,26 +20,40 @@
 #  (optional) Whether the designate central service will be running.
 #  Defaults to 'running'
 #
+# [*startup_script_ensure*]
+#  (optional) Whether or not the startup script for designate-central should be
+#  installed.  Defaults to 'auto'
+#  Valid options are: 'absent', 'auto', 'present', and 'unmanaged'. See the
+#  designate::startup_script class for details.
+#
+# [*startup_script_source*]
+#  (optional) Source for startup script if enabled
+#  Defaults to undef
+#
 # [*backend_driver*]
 #  (optional) Driver used for backend communication (fake, rpc, bind9, powerdns)
 #  Defaults to 'bind9'
 #
 class designate::central (
-  $package_ensure       = present,
-  $central_package_name = undef,
-  $enabled              = true,
-  $service_ensure       = 'running',
-  $backend_driver       = 'bind9',
+  $package_ensure        = present,
+  $central_package_name  = undef,
+  $enabled               = true,
+  $service_ensure        = 'running',
+  $startup_script_ensure = 'auto',
+  $startup_script_source = undef,
+  $backend_driver        = 'bind9',
 ) {
   include ::designate::params
 
-  package { 'designate-central':
-    ensure => $package_ensure,
-    name   => pick($central_package_name, $::designate::params::central_package_name),
+  designate::install { 'designate-central':
+    ensure       => $package_ensure,
+    package_name => pick($central_package_name, $::designate::params::central_package_name),
   }
 
-  Designate_config<||> ~> Service['designate-central']
-  Package['designate-central'] -> Designate_config<||>
+  designate::startup_script { 'designate-central':
+    ensure => $startup_script_ensure,
+    source => $startup_script_source,
+  }
 
   service { 'designate-central':
     ensure     => $service_ensure,

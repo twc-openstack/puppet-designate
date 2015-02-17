@@ -43,7 +43,6 @@ class designate::backend::bind9 (
     require => Class['::designate'],
   }
 
-  Class['::dns'] -> User['designate']
   User<| title == 'designate' |> {
     groups +> $::dns::params::group,
   }

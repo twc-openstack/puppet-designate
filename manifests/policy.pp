@@ -33,6 +33,7 @@ class designate::policy (
 
   Openstacklib::Policy::Base {
     file_path => $policy_path,
+    require   => Designate::Config_file['policy.json'],
   }
 
   create_resources('openstacklib::policy::base', $policies)

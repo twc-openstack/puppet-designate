@@ -8,5 +8,7 @@ fixtures:
     'openstacklib': 'git://github.com/stackforge/puppet-openstacklib.git'
     'stdlib': 'git://github.com/puppetlabs/puppetlabs-stdlib.git'
     'powerdns': 'git://github.com/antonlindstrom/puppet-powerdns.git'
+    'vcsrepo': 'git://github.com/puppetlabs/puppetlabs-vcsrepo'
+    'python': 'git://github.com/stankevich/puppet-python.git'
   symlinks:
     'designate': "#{source_dir}"

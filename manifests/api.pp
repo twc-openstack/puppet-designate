@@ -20,6 +20,16 @@
 #  (optional) Whether the designate api service will be running.
 #  Defaults to 'running'
 #
+# [*startup_script_ensure*]
+#  (optional) Whether or not the startup script for designate-api should be
+#  installed.  Defaults to 'auto'
+#  Valid options are: 'absent', 'auto', 'present', and 'unmanaged'. See the
+#  designate::startup_script class for details.
+#
+# [*startup_script_source*]
+#  (optional) Source for startup script if enabled
+#  Defaults to undef
+#
 # [*auth_strategy*]
 #  (optional) Authentication strategy to use, can be either "noauth" or "keystone"
 #  Defaults to 'noauth'
@@ -61,6 +71,8 @@ class designate::api (
   $api_package_name           = undef,
   $enabled                    = true,
   $service_ensure             = 'running',
+  $startup_script_ensure      = 'auto',
+  $startup_script_source      = undef,
   $auth_strategy              = 'noauth',
   $keystone_host              = '127.0.0.1',
   $keystone_port              = '35357',
@@ -73,13 +85,15 @@ class designate::api (
 ){
   include ::designate::params
 
-  package { 'designate-api':
-    ensure => $package_ensure,
-    name   => pick($api_package_name, $::designate::params::api_package_name),
+  designate::install { 'designate-api':
+    ensure       => $package_ensure,
+    package_name => pick($api_package_name, $::designate::params::api_package_name),
   }
 
-  Designate_config<||> ~> Service['designate-api']
-  Package['designate-api'] -> Designate_config<||>
+  designate::startup_script { 'designate-api':
+    ensure => $startup_script_ensure,
+    source => $startup_script_source,
+  }
 
   service { 'designate-api':
     ensure     => $service_ensure,
